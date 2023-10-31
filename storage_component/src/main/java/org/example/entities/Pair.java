@@ -1,26 +1,24 @@
 package org.example.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
-@EqualsAndHashCode
+import java.util.Map;
+
 @Getter
-@Entity
-@Table
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Pair<K, V> implements Map.Entry<K, V> {
 
-public class Pair {
-    @Setter
-    @Id
-    private String key;
-    private String value;
+    private K key;
+    private V value;
 
     public Pair() {}
-    public Pair(String key, String value) {
+    public Pair(K key, V value) {
         this.key = key;
         this.value = value;
+    }
+
+    @Override
+    public V setValue(V value) {
+        this.value = value;
+        return value;
     }
 }

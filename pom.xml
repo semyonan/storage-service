@@ -12,6 +12,7 @@
     <modules>
         <module>server_component</module>
         <module>storage_component</module>
+        <module>../client-service</module>
     </modules>
 
     <properties>

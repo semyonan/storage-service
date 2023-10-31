@@ -1,7 +1,7 @@
 package org.example.services;
 
+import org.example.dbProcessing.InMemoryDb;
 import org.example.entities.Pair;
-import org.example.repositories.PairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 public class MapService {
 
     @Autowired
-    PairRepository pairRepository;
-    public Pair addPair(String key, String value) {
-        Pair newPair = new Pair(key, value);
-        return pairRepository.save(newPair);
+    InMemoryDb repository;
+
+    public Pair<String, String> addPair(String key, String value) {
+        repository.set(key, value);
+        return new Pair<String, String>(key, value);
     }
 
-    public Pair getPair(String key) {
-        return pairRepository.getReferenceById(key);
+    public Pair<String, String> getPair(String key) {
+        var value = repository.get(key);
+        return new Pair<String, String>(key, value);
     }
 }

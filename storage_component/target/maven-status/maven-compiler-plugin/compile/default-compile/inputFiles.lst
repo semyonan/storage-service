@@ -1,3 +1,8 @@
-/Users/anya/Documents/client-app/highload-master/storage_component/src/main/java/org/example/Main.java
-/Users/anya/Documents/client-app/highload-master/storage_component/src/main/java/org/example/entities/Pair.java
-/Users/anya/Documents/client-app/highload-master/storage_component/src/main/java/org/example/repositories/PairRepository.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/Main.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/dbProcessing/InMemoryDb.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/merging/Merger.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/entities/Pair.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/ssTable/SSTableWriter.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/ssTable/SSTableParser.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/ssTable/SSTable.java
+/Users/anya/Documents/test-bench/storage-service/storage_component/src/main/java/org/example/ssTable/SSTableReader.java

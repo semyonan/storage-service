@@ -14,7 +14,7 @@ public class MapController {
     @Autowired
     MapService mapService;
 
-    @PutMapping(path = "/{key}",  params = {"value"})
+    @PutMapping(path = "/{key}")
     public ResponseEntity<Pair> addPair(@PathVariable String key,
                                         @RequestParam String value){
         return ResponseEntity.ok(mapService.addPair(key, value));
