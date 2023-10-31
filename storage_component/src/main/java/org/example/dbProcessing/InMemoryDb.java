@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.example.merging.Merger;
 import org.example.ssTable.SSTable;
 import org.example.ssTable.SSTableWriter;
+import org.example.ssTable.compression.Compressor;
+import org.example.ssTable.compression.ZlibCompressor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,7 @@ public class InMemoryDb {
     private TreeMap<String, String> tree = new TreeMap<String, String>();
     private List<SSTable> tablesList = new LinkedList<SSTable>();
     private final Merger merger;
+    private final Compressor compressor;
     
 
     public InMemoryDb(@Value("${mergeInterval}") int mergeInterval,
@@ -33,6 +36,8 @@ public class InMemoryDb {
         this.locationString = locationString;
         this.tree = new TreeMap<String, String>();
         this.merger = new Merger();
+        System.out.println(locationString);
+        this.compressor = new ZlibCompressor();
         timer = mergePlanning();
     }
 
@@ -48,9 +53,9 @@ public class InMemoryDb {
 
     private void createSStable() {
         var filePath = locationString + "SSTable" + String.valueOf(tablesList.size() + ".txt");
-        var indexes = SSTableWriter.write(filePath, new LinkedList<>(tree.entrySet()), maxSegmentSize);
+        var indexes = SSTableWriter.write(filePath, new LinkedList<>(tree.entrySet()), maxSegmentSize, compressor);
 
-        tablesList.add(new SSTable(filePath, indexes));
+        tablesList.add(new SSTable(filePath, indexes, compressor));
         tree.clear();
     }
 

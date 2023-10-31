@@ -1,6 +1,5 @@
 package org.example.ssTable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,36 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.zip.Deflater;
+
+import org.example.ssTable.compression.Compressor;
 
 public class SSTableWriter {
-
-    static public byte[] compress(byte[] bytes, int fromPos, int length) throws IOException {
-        ByteArrayOutputStream baos = null;
-        Deflater dfl = new Deflater();
-        dfl.setLevel(Deflater.BEST_COMPRESSION);
-        dfl.setInput(bytes, fromPos, length);
-        dfl.finish();
-        baos = new ByteArrayOutputStream();
-        byte[] tmp = new byte[4*1024];
-        try{
-            while(!dfl.finished()){
-                int size = dfl.deflate(tmp);
-                baos.write(tmp, 0, size);
-            }
-        } catch (Exception ex){
-             
-        } finally {
-            try{
-                if(baos != null) baos.close();
-            } catch(Exception ex){}
-        }
-         
-        return baos.toByteArray();
-    }
-
-
-    public static LinkedHashMap<String, Integer> write(String pathString,  LinkedList<Map.Entry<String, String>> data, int maxSegmentSize) {
+    public static LinkedHashMap<String, Integer> write(String pathString,  LinkedList<Map.Entry<String, String>> data, int maxSegmentSize, Compressor compressor) {
         LinkedHashMap<String, Integer> keyIndexes = new LinkedHashMap<String, Integer>();
 
         try (FileOutputStream fos=new FileOutputStream(pathString))
@@ -64,7 +38,7 @@ public class SSTableWriter {
 
                 if (counter % maxSegmentSize == 0 || counter == 1) {
                     if (counter != 1) {
-                        var compressed = compress(buff.array(), 0, buff.position());
+                        var compressed = compressor.compress(buff.array(), 0, buff.position());
                         length += compressed.length;
                         fos.write(compressed);
                         fos.flush(); 
@@ -77,7 +51,7 @@ public class SSTableWriter {
             }
 
             if (counter % maxSegmentSize != 0) {
-                var compressed = compress(buff.array(), 0, buff.position());
+                var compressed = compressor.compress(buff.array(), 0, buff.position());
                 length += compressed.length;
                 fos.write(compressed);
                 fos.flush();        

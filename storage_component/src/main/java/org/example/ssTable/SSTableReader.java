@@ -1,37 +1,15 @@
 package org.example.ssTable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
-import java.util.zip.Inflater;
+
+import org.example.ssTable.compression.Compressor;
 
 public class SSTableReader {
 
-    public static byte[] decompress(byte[] compressedData, int offset, int l) {
-        ByteArrayOutputStream baos = null;
-        Inflater iflr = new Inflater();
-        iflr.setInput(compressedData, offset, l);
-        baos = new ByteArrayOutputStream();
-        byte[] tmp = new byte[4*1024];
-        try{
-            while(!iflr.finished()){
-                int size = iflr.inflate(tmp);
-                baos.write(tmp, 0, size);
-            }
-        } catch (Exception ex){
-             
-        } finally {
-            try{
-                if(baos != null) baos.close();
-            } catch(Exception ex){}
-        }
-         
-        return baos.toByteArray();
-    }
-
-    public static byte[] read(String path, LinkedHashMap<String, Integer> keyIndexes) {
+    public static byte[] read(String path, LinkedHashMap<String, Integer> keyIndexes, Compressor compressor) {
         var res = new byte[1024];
         ByteBuffer buff = ByteBuffer.wrap(new byte[32*1024]);
         var set = keyIndexes.keySet();
@@ -54,7 +32,7 @@ public class SSTableReader {
                         index = keyIndexes.get(i.next());
                     }
 
-                    buff.put(decompress(res, 0, curIndex));
+                    buff.put(compressor.decompress(res, 0, curIndex));
                     curIndex = 0;
                 }
             } 
@@ -66,7 +44,7 @@ public class SSTableReader {
         return buff.array();
     }
 
-    public static byte[] read(String pathString, int start, int end) {
+    public static byte[] read(String pathString, int start, int end, Compressor compressor) {
         var res = new byte[1024];
         ByteBuffer buff = ByteBuffer.wrap(new byte[32*1024]);
 
@@ -82,7 +60,7 @@ public class SSTableReader {
                 length++;
 
                 if (length == end) {
-                    buff.put(decompress(res, 0, curIndex));
+                    buff.put(compressor.decompress(res, 0, curIndex));
                 }
             } 
         } catch(IOException ex){

@@ -7,14 +7,18 @@ import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import org.example.ssTable.compression.Compressor;
+
 @Getter
 public class SSTable {
     private String filePath;
     private LinkedHashMap<String, Integer> keyIndexes;
+    private Compressor compressor;
 
-    public SSTable(String filePath, LinkedHashMap<String, Integer> keyIndexes) {
+    public SSTable(String filePath, LinkedHashMap<String, Integer> keyIndexes, Compressor compressor) {
         this.filePath = filePath;
         this.keyIndexes = keyIndexes;
+        this.compressor = compressor;
     }
 
     public boolean keyExists(String key) {
@@ -63,13 +67,14 @@ public class SSTable {
 
     public String getValue(String key) {
         var indexes = getKeyIndexes(key);
-        var pairs = SSTableParser.parse(SSTableReader.read(filePath, indexes.getKey(), indexes.getValue()));
+        var pairs = SSTableParser.parse(SSTableReader.read(filePath, indexes.getKey(), indexes.getValue(), compressor));
         int index = Collections.binarySearch(pairs.stream()
                 .map(pair -> pair.getKey()).toList(), key);
 
         if (index < 0) {
             return null;
         }
+        
         return pairs.get(index).getValue();
     }
 

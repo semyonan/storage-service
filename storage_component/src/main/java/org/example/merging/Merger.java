@@ -4,16 +4,17 @@ import org.example.ssTable.SSTable;
 import org.example.ssTable.SSTableParser;
 import org.example.ssTable.SSTableReader;
 import org.example.ssTable.SSTableWriter;
+import org.example.ssTable.compression.Compressor;
 
 import java.util.*;
 
 public class Merger {
 
-    private void saveNewSSTable(String location, int maxSegmentSize, LinkedList<Map.Entry<String, String>> mergedTwoSStable, LinkedList<SSTable> newTableList) {
+    private void saveNewSSTable(String location, int maxSegmentSize, LinkedList<Map.Entry<String, String>> mergedTwoSStable, LinkedList<SSTable> newTableList, Compressor compressor) {
         var filePath = location + "SSTable" + String.valueOf(UUID.randomUUID().toString() + ".txt");
-        var indexes = SSTableWriter.write(filePath, mergedTwoSStable, maxSegmentSize);
+        var indexes = SSTableWriter.write(filePath, mergedTwoSStable, maxSegmentSize, compressor);
 
-        newTableList.add(new SSTable(filePath, indexes));
+        newTableList.add(new SSTable(filePath, indexes, compressor));
         mergedTwoSStable.clear();
     }
 
@@ -21,7 +22,7 @@ public class Merger {
                                 int maxCapacity, LinkedList<Map.Entry<String, String>> mergedTwoSStable,
                                LinkedList<SSTable> newTableList,
                                ListIterator<Map.Entry<String, String>> iterator1,
-                               ListIterator<Map.Entry<String, String>> iterator2) {
+                               ListIterator<Map.Entry<String, String>> iterator2, Compressor compressor) {
 
         while (iterator1.hasNext() && iterator2.hasNext()) {
             Map.Entry<String, String> pair1 = iterator1.next();
@@ -38,20 +39,24 @@ public class Merger {
                 iterator1.previous(); // Возвращаемся назад для проверки следующей пары
             }
             if (mergedTwoSStable.size() == maxCapacity) {
-                saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList);
+                saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList, compressor);
             }
         }
         while (iterator1.hasNext()) {
             mergedTwoSStable.add(iterator1.next());
-            saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList);
+            if (mergedTwoSStable.size() == maxCapacity) {
+                saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList, compressor);
+            }
         }
         while (iterator2.hasNext()) {
             mergedTwoSStable.add(iterator2.next());
-            saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList);
+            if (mergedTwoSStable.size() == maxCapacity) {
+                saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList, compressor);
+            }
         }
 
         if (mergedTwoSStable.size() > 0) {
-            saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList);
+            saveNewSSTable(locationString, maxSegmentSize, mergedTwoSStable, newTableList, compressor);
 
         }
 
@@ -64,14 +69,14 @@ public class Merger {
         var newTableList = new LinkedList<SSTable>();
         ListIterator<SSTable> ssTables = tableList
                 .listIterator(tableList.size());
-
         List<Map.Entry<String, String>> pairs1 = null;
-
+        Compressor compressor = null;
 
         if (ssTables.hasPrevious()) {
             var ssTable1 = ssTables.previous();
+            compressor = ssTable1.getCompressor();
             pairs1 = SSTableParser.parse(SSTableReader
-                    .read(ssTable1.getFilePath(), ssTable1.getKeyIndexes()));
+                    .read(ssTable1.getFilePath(), ssTable1.getKeyIndexes(), compressor));
         }
 
         LinkedList<Map.Entry<String, String>> mergedTwoSStable = new LinkedList<>();
@@ -79,11 +84,11 @@ public class Merger {
         while(ssTables.hasPrevious()) {
             var ssTable2 = ssTables.previous();
             var pairs2 = SSTableParser.parse(SSTableReader
-                    .read(ssTable2.getFilePath(), ssTable2.getKeyIndexes()));
+                    .read(ssTable2.getFilePath(), ssTable2.getKeyIndexes(), compressor));
 
                 ListIterator<Map.Entry<String, String>> iterator1 = pairs1.listIterator();
                 ListIterator<Map.Entry<String, String>> iterator2 = pairs2.listIterator();
-                mergeTwoTables(maxSegmentSize, locationString, maxCapacity, mergedTwoSStable, newTableList, iterator1, iterator2);
+                mergeTwoTables(maxSegmentSize, locationString, maxCapacity, mergedTwoSStable, newTableList, iterator1, iterator2, compressor);
                 pairs1 = mergedTwoSStable;
             }
         return newTableList;
