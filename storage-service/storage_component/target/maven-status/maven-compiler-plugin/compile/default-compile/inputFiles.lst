@@ -1,0 +1,8 @@
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/org/example/config/RedisConfig.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/org/example/Main.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/org/example/repositories/PairRepositoryImpl.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/queue/MessageSubscriber.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/queue/MessagePublisherImpl.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/queue/MessagePublisher.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/org/example/repositories/PairRepository.java
+/Users/anya/Documents/highload-lab3/storage-service/storage_component/src/main/java/org/example/entities/Pair.java

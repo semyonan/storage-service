@@ -1,0 +1,3 @@
+org/example/Application.class
+org/example/services/MapService.class
+org/example/controllers/MapController.class
