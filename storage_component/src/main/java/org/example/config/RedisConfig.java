@@ -1,8 +1,10 @@
 package org.example.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -18,15 +20,12 @@ import queue.MessageSubscriber;
 @ComponentScan("org.example")
 public class RedisConfig {
 
-    @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory();
-    }
-
+    @Autowired
+    RedisConnectionFactory redisConnectionFactory;
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         final RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
-        template.setConnectionFactory(jedisConnectionFactory());
+        template.setConnectionFactory(redisConnectionFactory);
         template.setValueSerializer(new GenericToStringSerializer<Object>(Object.class));
         return template;
     }
@@ -39,7 +38,7 @@ public class RedisConfig {
     @Bean
     RedisMessageListenerContainer redisContainer() {
         final RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(jedisConnectionFactory());
+        container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener(messageListener(), topic());
         return container;
     }

@@ -30,7 +30,7 @@ public class PairRepositoryImpl implements PairRepository{
     }
 
     @Override
-    public Pair getReferenceById(Long id) {
-        return (Pair) hashOperations.get(KEY, id);
+    public Pair getReferenceById(String id) {
+        return new Pair(id, hashOperations.get(KEY, id).toString());
     }
 }

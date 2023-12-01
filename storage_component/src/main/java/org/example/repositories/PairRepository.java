@@ -4,5 +4,5 @@ import org.example.entities.Pair;
 
 public interface PairRepository {
     Pair save(Pair pair);
-    Pair getReferenceById(Long id);
+    Pair getReferenceById(String id);
 }

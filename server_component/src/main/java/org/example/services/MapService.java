@@ -17,7 +17,7 @@ public class MapService {
     }
 
     public Pair getPair(String key) {
-        var pair = repository.getReferenceById(Long.parseLong(key));
+        var pair = repository.getReferenceById(key);
         return pair;
     }
 }
