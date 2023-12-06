@@ -1,8 +1,9 @@
 package org.example.repositories;
 
 import org.example.entities.Pair;
+import org.springframework.stereotype.Repository;
 
 public interface PairRepository {
-    Pair save(Pair pair);
+    void save(Pair<String, String> pair);
     Pair getReferenceById(String id);
 }

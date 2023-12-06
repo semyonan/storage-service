@@ -5,18 +5,26 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @EqualsAndHashCode
 @Getter
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-public class Pair {
+public class Pair<K, V> implements Map.Entry<K, V> {
     @Setter
-    private String key;
-    private String value;
+    private K key;
+    private V value;
 
     public Pair() {}
-    public Pair(String key, String value) {
+    public Pair(K key, V value) {
         this.key = key;
         this.value = value;
+    }
+
+    @Override
+    public V setValue(V value) {
+        this.value = value;
+        return value;
     }
 }
